@@ -12,6 +12,7 @@ async function handleCreateProduct(req, res, next) {
       quantity,
       description,
       sku,
+      current_status
     } = req.body;
 
     const product = new Product({
@@ -23,6 +24,7 @@ async function handleCreateProduct(req, res, next) {
       quantity,
       description,
       sku,
+      current_status
     });
 
     if (!title || !sale_price || !colors || !quantity || !description || !sku) {
@@ -43,6 +45,37 @@ async function handleCreateProduct(req, res, next) {
     next(error);
   }
 }
+
+
+async function handleUpdateProduct(req, res, next) {
+  const productId = req.params.id
+
+  const product = {
+    title,
+    sale_price,
+    discount_price,
+    colors,
+    sizes,
+    quantity,
+    description,
+    sku,
+    current_status
+  } = req.body;
+
+  try {
+
+    if(!productId) return res.status(404).json({status: false, message: "Product not found"});
+
+    await Product.findByIdAndUpdate(productId, product);
+
+    return res.status(201).json({status: true, message: "Update success"})
+    
+  } catch (error) {
+     res.status(500).json({status: false, message: "Update failed", error})
+     next()
+  }
+}
+
 
 // get all products
 async function handleGetProduct(req, res, next) {
@@ -137,4 +170,5 @@ module.exports = {
   handleCreateProduct,
   handleGetSingleProduct,
   handleDeleteProduct,
+  handleUpdateProduct
 };

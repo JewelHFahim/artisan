@@ -16,8 +16,8 @@ const { restrictUserTo } = require("../middlewares/auth.middleware");
 router.post("/", handleCreateUser);
 router.post("/login", handleLoginUser);
 router.post("/logout", handleLogoutUser);
-router.get("/", restrictUserTo(["admin"]), handleGetUsers);
-router.get("/:id", restrictUserTo(["admin"]), handleGetSingleUser);
+router.get("/", handleGetUsers);
+router.get("/:id", handleGetSingleUser);
 router.delete("/:id", restrictUserTo(["admin"]), handleDeleteUser);
 router.put("/:id/update", restrictUserTo(["admin"]), handleUpdateUser);
 

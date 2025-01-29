@@ -39,6 +39,12 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+
+    current_status: {
+      type: String,
+      enum: ["sale", "out"],
+      default: "sale",
+    },
   },
 
   {

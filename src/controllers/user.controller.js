@@ -11,11 +11,10 @@ async function handleCreateUser(req, res, next) {
     }
 
     const existsUser = await User.findOne({ phone });
-    if (existsUser) {
+    if (existsUser)
       return res
         .status(400)
         .send({ status: false, message: "Phone number already exists" });
-    }
 
     const user = await User.create({
       fullName,
@@ -45,32 +44,59 @@ async function handleCreateUser(req, res, next) {
 }
 
 // Login a user
+// async function handleLoginUser(req, res, next) {
+//   try {
+//     const { phone, password } = req.body;
+
+//     if (!phone || !password) {
+//       return res.status(400).send("Please provide phone and password");
+//     }
+
+//     const user = await User.findOne({ phone });
+
+//     if (!user)
+//       return res.status(404).send({ status: false, message: "User not found" });
+
+//     const { token, id } = await User.findByCredentials(phone, password);
+
+//     return res.cookie("token", token).status(200).send({ status: true, message: "Login success", data: { _id: id, token } });
+//   } catch (error) {
+//     console.log("Failed to login user", error);
+//     res.status(500).send("Failed to login user");
+//     next();
+//   }
+// }
+
 async function handleLoginUser(req, res, next) {
   try {
-    const { phone, password } = req.body;
+    const { email, password } = req.body;
 
-    if (!phone || !password) {
-      return res.status(400).send("Please provide phone and password");
+    // Validate input
+    if (!email || !password) {
+      return res.status(400).send({ status: false, message: "Please provide email and password" });
     }
-    const user = await User.findOne({ phone });
 
+    // Check if the user exists
+    const user = await User.findOne({ email });
+    
     if (!user) {
       return res.status(404).send({ status: false, message: "User not found" });
     }
-    const { token, id } = await User.findByCredentials(phone, password);
 
-    return res
-      .cookie("token", token)
-      .status(200)
-      .send({
-        status: true,
-        message: "Login success",
-        data: { _id: id, token },
-      });
+    // Authenticate user
+    try {
+      const { token, id } = await User.findByCredentials(email, password);
+      return res.cookie("token", token).status(200).send({ status: true, message: "Login successful", token });
+    } catch (authError) {
+      if (authError.message === "Password is incorrect") {
+        return res.status(401).send({ status: false, message: "Password is incorrect" });
+      }
+      throw authError;
+    }
   } catch (error) {
-    console.log("Failed to login user", error);
-    res.status(500).send("Failed to login user");
-    next();
+    console.log("Failed to login user:", error.message);
+   return res.status(500).send({ status: false, message: "Failed to login user" });
+    
   }
 }
 
@@ -143,22 +169,21 @@ async function handleGetSingleUser(req, res, next) {
     const userId = req.params.id;
 
     if (!userId) {
-      return res.status(400).send("User ID is required");
+      return res.status(400).send({ status: false, message: "User ID is required" });
     }
 
-    const user = await User.findById(userId);
+    // Use `.select` to exclude the password field from the query result
+    const user = await User.findById(userId).select("-password");
 
     if (!user) {
-      return res.status(404).send("User not found");
+      return res.status(404).send({ status: false, message: "User not found" });
     }
 
-    return res
-      .status(200)
-      .send({ status: true, message: "User found", data: user });
+    return res.status(200).send({ status: true, message: "User found", data: user});
   } catch (error) {
-    console.log("Failed to get user", error);
-    res.status(500).send("Failed to get user");
-    next();
+    console.error("Failed to get user:", error);
+    res.status(500).send({ status: false, message: "Failed to get user" });
+    next(error);
   }
 }
 

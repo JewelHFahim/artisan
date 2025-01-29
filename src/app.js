@@ -3,7 +3,6 @@ const cors = require("cors");
 const express = require("express");
 const connectDB = require("./config/db");
 const { ALLOWED_ORIGINS, PORT } = require("./config/env");
-const logger = require("./config/logger");
 const routes = require("./routes");
 const cookieParser = require("cookie-parser");
 const {
@@ -48,5 +47,4 @@ app.listen(port, () => {
   console.log("Server runningon port:", port);
 });
 
-// logger.info(`Server running on port: ${port}`);
 module.exports = app;
