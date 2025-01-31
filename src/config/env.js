@@ -22,3 +22,6 @@ module.exports = {
 };
 
 // MONGODB_URL=mongodb+srv://artisanEcom:artisanEcom123@cluster0.d0tal.mongodb.net/artisan?retryWrites=true&w=majority&appName=Cluster0
+
+
+// MONGODB_URL=mongodb://127.0.0.1:27017/artisan

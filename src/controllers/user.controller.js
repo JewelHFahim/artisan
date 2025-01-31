@@ -43,30 +43,7 @@ async function handleCreateUser(req, res, next) {
   }
 }
 
-// Login a user
-// async function handleLoginUser(req, res, next) {
-//   try {
-//     const { phone, password } = req.body;
-
-//     if (!phone || !password) {
-//       return res.status(400).send("Please provide phone and password");
-//     }
-
-//     const user = await User.findOne({ phone });
-
-//     if (!user)
-//       return res.status(404).send({ status: false, message: "User not found" });
-
-//     const { token, id } = await User.findByCredentials(phone, password);
-
-//     return res.cookie("token", token).status(200).send({ status: true, message: "Login success", data: { _id: id, token } });
-//   } catch (error) {
-//     console.log("Failed to login user", error);
-//     res.status(500).send("Failed to login user");
-//     next();
-//   }
-// }
-
+// Login
 async function handleLoginUser(req, res, next) {
   try {
     const { email, password } = req.body;
@@ -216,9 +193,7 @@ async function handleDeleteUser(req, res, next) {
 async function handleLogoutUser(req, res, next) {
   try {
     res.clearCookie("token");
-    return res
-      .status(200)
-      .json({ status: true, message: "Logout successfully" });
+    return res.status(200).json({ status: true, message: "Logout successfully" });
   } catch (error) {
     console.log("Failed to logout user", error);
     res.status(500).send("Failed to logout user");

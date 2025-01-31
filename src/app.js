@@ -21,6 +21,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(checkForAuthenticationToken("token"));
 const allowedOrigins = ALLOWED_ORIGINS ? ALLOWED_ORIGINS?.split(",") : [];
+// const allowedOrigins = "http://localhost:3000";
+
 
 // CORS
 app.use(
