@@ -1,6 +1,6 @@
 const Product = require("../models/product.model");
 
-// create a new product
+// Create a new product
 async function handleCreateProduct(req, res, next) {
   try {
     const {
@@ -12,7 +12,7 @@ async function handleCreateProduct(req, res, next) {
       quantity,
       description,
       sku,
-      current_status
+      current_status,
     } = req.body;
 
     const product = new Product({
@@ -24,7 +24,7 @@ async function handleCreateProduct(req, res, next) {
       quantity,
       description,
       sku,
-      current_status
+      current_status,
     });
 
     if (!title || !sale_price || !colors || !quantity || !description || !sku) {
@@ -46,11 +46,11 @@ async function handleCreateProduct(req, res, next) {
   }
 }
 
-
+// Update Product
 async function handleUpdateProduct(req, res, next) {
-  const productId = req.params.id
+  const productId = req.params.id;
 
-  const product = {
+  const product = ({
     title,
     sale_price,
     discount_price,
@@ -59,29 +59,29 @@ async function handleUpdateProduct(req, res, next) {
     quantity,
     description,
     sku,
-    current_status
-  } = req.body;
+    current_status,
+  } = req.body);
 
   try {
-
-    if(!productId) return res.status(404).json({status: false, message: "Product not found"});
+    if (!productId)
+      return res
+        .status(404)
+        .json({ status: false, message: "Product not found" });
 
     await Product.findByIdAndUpdate(productId, product);
 
-    return res.status(201).json({status: true, message: "Update success"})
-    
+    return res.status(201).json({ status: true, message: "Update success" });
   } catch (error) {
-     res.status(500).json({status: false, message: "Update failed", error})
-     next()
+    res.status(500).json({ status: false, message: "Update failed", error });
+    next();
   }
 }
 
-
-// get all products
+// Get all products
 async function handleGetProduct(req, res, next) {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
+    const limit = parseInt(req.query.limit) || 9;
     const skip = (page - 1) * limit;
 
     const products = await Product.find().skip(skip).limit(limit);
@@ -170,5 +170,5 @@ module.exports = {
   handleCreateProduct,
   handleGetSingleProduct,
   handleDeleteProduct,
-  handleUpdateProduct
+  handleUpdateProduct,
 };

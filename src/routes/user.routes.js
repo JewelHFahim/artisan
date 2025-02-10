@@ -13,7 +13,7 @@ const {
 } = require("../controllers/user.controller");
 const { restrictUserTo } = require("../middlewares/auth.middleware");
 
-router.post("/", handleCreateUser);
+router.post("/signup", handleCreateUser);
 router.post("/login", handleLoginUser);
 router.post("/logout", handleLogoutUser);
 router.get("/", handleGetUsers);

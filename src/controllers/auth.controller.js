@@ -15,6 +15,8 @@ const bcrypt = require("bcrypt");
 async function handleResetPassword(req, res) {
   const { email } = req.body;
 
+  console.log(email)
+
   const user = await User.findOne({email});
 
   if (!user)

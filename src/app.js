@@ -20,17 +20,18 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(checkForAuthenticationToken("token"));
-const allowedOrigins = ALLOWED_ORIGINS ? ALLOWED_ORIGINS?.split(",") : [];
-// const allowedOrigins = "http://localhost:3000";
 
+const allowedOrigins = ALLOWED_ORIGINS ? ALLOWED_ORIGINS?.split(",").map((origin) => origin.trim()) : [];
 
 // CORS
 app.use(
   cors({
-    origin: (origin, callback) => {
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) callback(null, true);
-      else callback(new Error("Not allowd by CORS"));
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
     },
 
     methods: ["GET", "POST", "PUT", "DELETE"],
@@ -38,6 +39,7 @@ app.use(
     allowedHeaders: ["Authorization", "Content-Type"],
   })
 );
+
 
 app.get("/", (req, res) => {
   res.send({ message: "Server Running..." });

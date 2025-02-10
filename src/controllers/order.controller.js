@@ -149,7 +149,6 @@ async function handleGetUserOrders(req, res) {
     const limit = parseInt(req.query.limit) || 8;
     const skip = (page - 1) * limit;
 
-
    const orders = await Order.find({user_id: id}).populate({path: 'user_id', select: 'fullName'}).skip(skip).limit(limit).sort({createdAt: - 1});
 
    const totalOrders = await Order.countDocuments({user_id: id});

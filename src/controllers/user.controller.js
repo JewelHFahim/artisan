@@ -3,42 +3,28 @@ const User = require("../models/user.model");
 // Create a new user
 async function handleCreateUser(req, res, next) {
   try {
-    const { fullName, email, phone, password, address, order_history, role } =
-      req.body;
+    const { fullName, email, phone, password, address, order_history, role } = req.body;
 
     if (!fullName || !email || !phone || !password || !address) {
       return res.status(400).send("Please provide all required fields");
     }
 
-    const existsUser = await User.findOne({ phone });
+    const existsUser = await User.findOne({ $or: [{ email }, { phone }] });
+    
     if (existsUser)
-      return res
-        .status(400)
-        .send({ status: false, message: "Phone number already exists" });
+      return res.status(400).send({ status: false, message: "Phone/Email already exist" });
 
-    const user = await User.create({
-      fullName,
-      email,
-      phone,
-      password,
-      address,
-      role,
-      order_history,
-    });
+    const user = await User.create({ fullName, email, phone, password, address, role, order_history });
 
     if (!user) {
-      return res.status(500).send({
-        status: false,
-        message: "An error occurred while creating the user",
-      });
+      return res.status(500).send({ status: false, message: "An error occurred while creating the user" });
     }
-
-    return res
-      .status(201)
-      .send({ status: true, message: "User created", data: user });
+    return res.status(201).send({ status: true, message: "User created", data: user });
   } catch (error) {
     console.log("Failed to create user", error);
+
     res.status(500).send("Failed to create user");
+
     next();
   }
 }
@@ -63,7 +49,7 @@ async function handleLoginUser(req, res, next) {
     // Authenticate user
     try {
       const { token, id } = await User.findByCredentials(email, password);
-      return res.cookie("token", token).status(200).send({ status: true, message: "Login successful", token });
+      return res.cookie("token", token).status(200).send({ status: true, message: "Login successful", id, token });
     } catch (authError) {
       if (authError.message === "Password is incorrect") {
         return res.status(401).send({ status: false, message: "Password is incorrect" });
